@@ -34,7 +34,7 @@ fn dial_rotation(dial : &mut i32, instruction : &str) -> i32 {
         }
         *dial -= number;
     } else if direction == 'R' {
-        if number >= (100 - *dial) {
+        if (*dial + number) >= 100 {
             zeroes += 1;
         }
         *dial += number;    
