@@ -27,9 +27,13 @@ fn dial_rotation(dial : &mut i32, instruction : &str) -> i32 {
     let mut zeroes = number / 100;
         
     number %= 100; 
-    
+   
+    if number % 100 == 0 {
+        return zeroes;
+    }
+
     if direction == 'L' { 
-        if number >= *dial {
+        if number >= *dial && *dial != 0 {
             zeroes += 1;
         }
         *dial -= number;
