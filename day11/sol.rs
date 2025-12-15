@@ -3,7 +3,13 @@ use std::fs;
 use std::collections::HashMap;
 use std::collections::HashSet;
 
-const FILE_PATH: &str = "./input.txt";
+const FILE_PATH: &str = "./test.txt";
+
+struct StateKey {
+    node : String,
+    dac_state : bool,
+    fft_state : bool
+}
 
 fn main() {
     let contents = fs::read_to_string(FILE_PATH).expect("Should have been able to read file");
@@ -29,9 +35,11 @@ fn main() {
 
     println!("number of paths: {paths_part1}");
 
-    let paths_part2 = part2(&graph, "svr", false, false, HashSet::new());
+    let mut cache : HashMap<StateKey, i32> = HashMap::new();
+    let paths_part2 = part2(&graph, "svr", false, false, HashSet::<String>::new(), &mut cache);
 
     println!("number of dac and fft paths: {paths_part2}");
+    println!("{:?}", cache);
 }
 
 fn part2(
@@ -39,9 +47,11 @@ fn part2(
     start_node : &str, 
     dac : bool, 
     fft : bool, 
-    mut passed : HashSet<String>) -> i32 
+    mut passed : HashSet<String>,
+    dp : &mut HashMap<StateKey, i32>) -> i32 
 {
     if start_node == "out" {
+        println!("{:?}", passed);
         if dac && fft {
             return 1;
         } else {
@@ -51,6 +61,17 @@ fn part2(
 
     if passed.contains(start_node) {
         return 0;
+    }
+
+    let dp_key = StateKey {
+        node: start_node.to_string(),
+        dac_state: dac,
+        fft_state: fft
+    }
+
+    match dp.get(dp_key) {
+        Some(paths) => return *paths,
+        None => {}
     }
 
     passed.insert(start_node.to_string());
@@ -71,8 +92,10 @@ fn part2(
 
     let mut node_paths = 0;
     for node in outgoing {
-        node_paths += part2(graph, node, curr_dac, curr_fft, passed.clone());
+        node_paths += part2(graph, node, curr_dac, curr_fft, passed.clone(), dp);
     }
+
+    dp.insert(dp_key, node_paths);
 
     return node_paths;
 }
