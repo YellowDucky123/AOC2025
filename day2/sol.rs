@@ -26,20 +26,27 @@ fn main () {
 }
 
 fn string_check(s: String) -> bool {
-    for length in 2..s.len() {
+    for length in 1..=(s.len() / 2) {
+        if s.len() % length != 0 {
+            continue;
+        }
+
         let mut str_match = true;
         let substr = &s[0..length];
-
-        let mut i = 0;
-        while (i + length) < s.len() {
+        //println!("string being checked: {}, with substr {}", s, substr);
+        let mut i = length;
+        
+        while i < s.len() { 
+            //println!("string {}, substr {}", &s[i..(i + length)], substr);
             if &s[i..(i + length)] != substr {
                 str_match = false;
                 break;
             }
+                
             i += length;
         }
         if str_match {
-            return true; 
+            return true;
         }
     }
     return false;
@@ -48,10 +55,12 @@ fn string_check(s: String) -> bool {
 fn part2 (bounds : Vec<i64>) -> i64 {
     let mut total : i64 = 0;
 
+    println!("{} - {} : ", bounds[0], bounds[1]);
     for i in bounds[0]..=bounds[1] {
         let string_ver = i.to_string();
 
         if string_check(string_ver) {
+            println!("{}", i);
             total += i;
         }
     }
