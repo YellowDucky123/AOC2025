@@ -18,6 +18,8 @@ fn main () {
     let total_jolt = part1(banks.clone());
     println!("total part 1 : {}", total_jolt);
 
+    let total_jolt_pt2 = part2(banks.clone());
+    println!("total part 2 : {}", total_jolt_pt2);
 }
 
 fn biggest (arr : Vec<i8>, number_order : i8) -> (i8, usize){ 
@@ -36,9 +38,45 @@ fn biggest (arr : Vec<i8>, number_order : i8) -> (i8, usize){
         }
     }
     return (biggest, biggest_id);
-}   
+}  
 
-fn part1(banks : Vec<Vec<i8>>) -> i32 {
+fn biggest_pt2 (arr : Vec<i8>, number_order : usize) -> (u64, usize) {
+    let mut biggest : i8 = 0;
+    let mut biggest_id : usize = 0;
+   
+
+    let max_len = arr.len() - number_order;
+    for bat_id in 0..max_len {
+        if arr[bat_id] > biggest {
+            biggest = arr[bat_id];
+            biggest_id = bat_id;
+        }
+    }
+
+    return (biggest as u64, biggest_id);
+}
+
+fn part2 (banks : Vec<Vec<i8>>) -> u64 {
+    let mut total : u64 = 0;
+    
+    for bank in &banks {
+        let mut jolt : u64 = 0;
+        let mut current_id : usize = 0;
+        
+        for i in (0..12).rev() {
+            let (num, num_id) = biggest_pt2(bank[current_id..].to_vec(), i);
+        
+            jolt += num * (10_u64.pow(i as u32));
+         
+            current_id += num_id + 1;
+        }
+        total += jolt;
+    }
+
+    return total;
+}
+
+fn part1 (banks : Vec<Vec<i8>>) -> i32 {
     let mut total : i32 = 0;
     for bank in &banks {
         let (first, first_id) = biggest(bank.clone(), 1);
